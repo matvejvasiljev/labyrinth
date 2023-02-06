@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Irish+Grover&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-image: url("../public/bgHouse.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+.startMenu {
+  border-radius: 15px;
+  border: 2px solid white;
+  background-color: rgba(0, 0, 0, 0.333);
+  backdrop-filter: blur(3px);
+  max-width: 1350px;
+  width: 90%;
+  padding: 50px;
+  position: absolute;
+  box-sizing: border-box;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+
+  display: none;
+}
+
+h1 {
+  font-size: 100px;
+  font-family: 'Irish Grover', cursive;
+  font-weight: normal;
+  -webkit-text-stroke: 2px white;
+  background: linear-gradient(0deg, #ffe75d 0%, #ff7b00 52%, rgba(255, 220, 17, 1) 100%);
+  background-clip: text;
+  color: transparent;
+  background-size: 100% 200%;
+  background-position: top;
+  transition: 0.5s;
+  transform: rotate(2deg);
+}
+
+h1:hover {
+  transform: rotate(-2deg);
+  background-position: bottom;
+}
+
+img {
+  width: calc(100% / 3);
+  display: inline-block;
+  vertical-align: middle;
+  max-height: 400px;
+  object-fit: contain;
+}
+
+.wheel {
+  background-image: url("../public/candy.png");
+  width: calc(100% / 3);
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  height: 250px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.wheel img{
+  width: 100%;
+  height: 100%;
+}
+
+button {
+  font-size: 30px;
+  font-family: 'Irish Grover', cursive;
+  border-radius: 5px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  color: white;
+  background: linear-gradient(30deg, #ffe75d 0%, #ff7b00 52%, rgba(255, 220, 17, 1) 100%);
+  background-size: 200% 400%;
+  line-height: 40px;
+  padding: 0 20px;
+  transition: 0.2s;
+}
+
+button:hover {
+  border: 2px solid rgba(255, 255, 255, 1);
+  background-size: 100% 200%;
+}
+
+#mazeImage{
+  display: none;
+}

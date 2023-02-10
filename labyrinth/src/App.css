@@ -94,3 +94,10 @@ button:hover {
 #mazeImage{
   display: none;
 }
+
+#characterBoy{
+  width: 75px;
+  height: 75px;
+  position: absolute;
+
+}

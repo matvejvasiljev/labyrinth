@@ -10,8 +10,56 @@ class App extends React.Component {
       arrowPoint: 0,
       canvas: "",
       ctx: "",
+      keys: [],
+
+      boyStyle: {
+        top: 0,
+        left: 0,
+      },
     }
     this.arrowInterval = "";
+    this.animation = this.animation.bind(this)
+  }
+
+  animation() {
+    if (this.state.keys.length !== 0){
+      this.setState(function (state) {
+        let keys = state.keys
+        if (keys.includes(39)){
+          let boyStyle = state.boyStyle
+          boyStyle.left += 3
+          return{
+            boyStyle: boyStyle,
+          }
+        }
+      })
+    }
+  }
+
+  componentDidMount() {
+    document.onkeydown = (e) => {
+      this.setState(function (state) {
+        let keys = state.keys
+        if (!keys.includes(e.keyCode)) {
+          keys.push(e.keyCode)
+        }
+        console.log(keys)
+        return {
+          keys: keys,
+        }
+      })
+    }
+
+    document.onkeyup = (e) => {
+      this.setState(function (state) {
+        let keys = state.keys
+        if (keys.includes(e.keyCode)){
+          keys.splice(keys.indexOf(e.keyCode), 1)
+        }        
+      })
+    }
+
+    setInterval(this.animation, 10)
   }
 
   handleSubmit(e) {
@@ -79,6 +127,11 @@ class App extends React.Component {
     const arrowStyle = {
       transform: "rotate(" + this.state.arrowAngle + "deg)"
     }
+
+    const boyStyle = {
+      top: this.state.boyStyle.top + "px",
+      left: this.state.boyStyle.left + "px",
+    }
     return (
       <div>
         <form className="startMenu" onSubmit={(e) => this.handleSubmit(e)} action="">
@@ -94,6 +147,9 @@ class App extends React.Component {
         <form className="game" action="">
           <canvas></canvas>
           <img src="kidmaze-01.svg" id="mazeImage" onLoad={() => this.handleMazeLoad()} alt="" />
+          <div className="characters">
+            <img id="characterBoy" style={boyStyle} src="boy.png" alt="" />
+          </div>
         </form>
       </div>
     )
@@ -101,3 +157,6 @@ class App extends React.Component {
 }
 
 export default App;
+
+// сделать передвижение для остальных клавиш
+// нарисовать дизайн лабиринта

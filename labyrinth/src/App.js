@@ -13,8 +13,8 @@ class App extends React.Component {
       keys: [],
 
       boyStyle: {
-        top: 0,
-        left: 0,
+        top: 20,
+        left: 30,
       },
     }
     this.arrowInterval = "";
@@ -22,15 +22,47 @@ class App extends React.Component {
   }
 
   animation() {
-    if (this.state.keys.length !== 0){
+    let ctx = this.state.ctx
+    let boy = document.getElementById("characterBoy")
+
+    if (this.state.keys.length !== 0) {
       this.setState(function (state) {
         let keys = state.keys
-        if (keys.includes(39)){
-          let boyStyle = state.boyStyle
-          boyStyle.left += 3
-          return{
-            boyStyle: boyStyle,
+        let boyStyle = state.boyStyle
+        let boyCenterX = boyStyle.left + boy.offsetWidth / 2
+        let boyCenterY = boyStyle.top + boy.offsetHeight / 2
+
+        if (keys.includes(37)) {
+          boyStyle.left -= 3
+          if (ctx.getImageData(boyCenterX - boy.offsetWidth / 2, boyCenterY, 1, 1).data[3] > 0) {
+            boyStyle.left += 3
           }
+        }
+        if (keys.includes(38)) {
+          boyStyle.top -= 3
+          if (ctx.getImageData(boyCenterX, boyCenterY - boy.offsetHeight / 2, 1, 1).data[3] > 0) {
+            boyStyle.top += 3
+          }
+        }
+        if (keys.includes(39)) {
+          boyStyle.left += 3
+          if (ctx.getImageData(boyCenterX + boy.offsetWidth / 2, boyCenterY, 1, 1).data[3] > 0) {
+            boyStyle.left -= 3
+          }
+        }
+        if (keys.includes(40)) {
+          boyStyle.top += 3
+          if (ctx.getImageData(boyCenterX, boyCenterY + boy.offsetHeight / 2, 1, 1).data[3] > 0) {
+            boyStyle.top -= 3
+          }
+        }
+
+
+
+        // console.log(ctx.getImageData(boyCenterX, boyCenterY, 1, 1))
+
+        return {
+          boyStyle: boyStyle,
         }
       })
     }
@@ -38,6 +70,7 @@ class App extends React.Component {
 
   componentDidMount() {
     document.onkeydown = (e) => {
+      // console.log(e.keyCode)
       this.setState(function (state) {
         let keys = state.keys
         if (!keys.includes(e.keyCode)) {
@@ -53,12 +86,11 @@ class App extends React.Component {
     document.onkeyup = (e) => {
       this.setState(function (state) {
         let keys = state.keys
-        if (keys.includes(e.keyCode)){
+        if (keys.includes(e.keyCode)) {
           keys.splice(keys.indexOf(e.keyCode), 1)
-        }        
+        }
       })
     }
-
     setInterval(this.animation, 10)
   }
 
@@ -112,7 +144,10 @@ class App extends React.Component {
   handleMazeLoad() {
     // console.log("image loaded!");
     let canvas = document.getElementsByTagName("canvas")[0]
-    canvas.width = window.innerWidth
+    let gameContainer = document.getElementsByClassName("gameContainer")[0]
+    gameContainer.style.width = window.innerHeight + "px"
+
+    canvas.width = window.innerHeight
     canvas.height = window.innerHeight
     let ctx = canvas.getContext("2d")
     this.setState({
@@ -120,7 +155,7 @@ class App extends React.Component {
       ctx: ctx,
     })
     let img = document.getElementById("mazeImage")
-    ctx.drawImage(img, (window.innerWidth - window.innerHeight) / 2, 0)
+    ctx.drawImage(img, 0, 0, window.innerHeight, window.innerHeight)
   }
 
   render() {
@@ -145,9 +180,9 @@ class App extends React.Component {
         </form>
 
         <form className="game" action="">
-          <canvas></canvas>
-          <img src="kidmaze-01.svg" id="mazeImage" onLoad={() => this.handleMazeLoad()} alt="" />
-          <div className="characters">
+          <div className="gameContainer">
+            <canvas></canvas>
+            <img src="kidmaze-01.png" id="mazeImage" onLoad={() => this.handleMazeLoad()} alt="" />
             <img id="characterBoy" style={boyStyle} src="boy.png" alt="" />
           </div>
         </form>

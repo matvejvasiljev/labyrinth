@@ -49,7 +49,7 @@ h1:hover {
   background-position: bottom;
 }
 
-img {
+.startMenu img {
   width: calc(100% / 3);
   display: inline-block;
   vertical-align: middle;
@@ -68,7 +68,7 @@ img {
   vertical-align: middle;
 }
 
-.wheel img{
+.wheel img {
   width: 100%;
   height: 100%;
 }
@@ -91,13 +91,20 @@ button:hover {
   background-size: 100% 200%;
 }
 
-#mazeImage{
+#mazeImage {
   display: none;
 }
 
-#characterBoy{
-  width: 75px;
-  height: 75px;
+#characterBoy {
+  height: 60px;
   position: absolute;
 
+}
+
+.gameContainer {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 100%;
+  backdrop-filter: blur(5px);
 }

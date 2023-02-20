@@ -11,61 +11,118 @@ class App extends React.Component {
       canvas: "",
       ctx: "",
       keys: [],
+      timerInfo: 2 * 600,
+      timerFinal: "",
+
 
       boyStyle: {
         top: 20,
         left: 30,
+        transform: -1,
       },
+
+      ghostStyle: {
+        top: window.innerHeight - 55 - 20,
+        left: window.innerHeight - 46 - 30,
+        transform: 1,
+      }
     }
     this.arrowInterval = "";
-    this.animation = this.animation.bind(this)
+    this.animation = this.animation.bind(this);
+    this.timer = this.timer.bind(this);
   }
 
   animation() {
     let ctx = this.state.ctx
     let boy = document.getElementById("characterBoy")
+    let ghost = document.getElementById("characterGhost")
+
 
     if (this.state.keys.length !== 0) {
       this.setState(function (state) {
         let keys = state.keys
+
         let boyStyle = state.boyStyle
-        let boyCenterX = boyStyle.left + boy.offsetWidth / 2
-        let boyCenterY = boyStyle.top + boy.offsetHeight / 2
+        let boySpeed = 3
+
+        let ghostStyle = state.ghostStyle
+        let ghostSpeed = 3
 
         if (keys.includes(37)) {
-          boyStyle.left -= 3
-          if (ctx.getImageData(boyCenterX - boy.offsetWidth / 2, boyCenterY, 1, 1).data[3] > 0) {
-            boyStyle.left += 3
+          boyStyle.left -= boySpeed
+          boyStyle.transform = 1
+          if (ctx.getImageData(boyStyle.left, boyStyle.top, 1, boy.offsetHeight).data.includes(255)) {
+            boyStyle.left += boySpeed
           }
         }
         if (keys.includes(38)) {
-          boyStyle.top -= 3
-          if (ctx.getImageData(boyCenterX, boyCenterY - boy.offsetHeight / 2, 1, 1).data[3] > 0) {
-            boyStyle.top += 3
+          boyStyle.top -= boySpeed
+          if (ctx.getImageData(boyStyle.left, boyStyle.top, boy.offsetWidth, 1).data.includes(255)) {
+            boyStyle.top += boySpeed
           }
         }
         if (keys.includes(39)) {
-          boyStyle.left += 3
-          if (ctx.getImageData(boyCenterX + boy.offsetWidth / 2, boyCenterY, 1, 1).data[3] > 0) {
-            boyStyle.left -= 3
+          boyStyle.left += boySpeed
+          boyStyle.transform = -1
+          if (ctx.getImageData(boyStyle.left + boy.offsetWidth, boyStyle.top, 1, boy.offsetHeight).data.includes(255)) {
+            boyStyle.left -= boySpeed
           }
         }
         if (keys.includes(40)) {
-          boyStyle.top += 3
-          if (ctx.getImageData(boyCenterX, boyCenterY + boy.offsetHeight / 2, 1, 1).data[3] > 0) {
-            boyStyle.top -= 3
+          boyStyle.top += boySpeed
+          if (ctx.getImageData(boyStyle.left, boyStyle.top + boy.offsetHeight, boy.offsetWidth, 1).data.includes(255)) {
+            boyStyle.top -= boySpeed
           }
         }
 
 
 
-        // console.log(ctx.getImageData(boyCenterX, boyCenterY, 1, 1))
+        if (keys.includes(65)) {
+          ghostStyle.left -= ghostSpeed
+          ghostStyle.transform = 1
+          if (ctx.getImageData(ghostStyle.left, ghostStyle.top, 1, ghost.offsetHeight).data.includes(255)) {
+            ghostStyle.left += ghostSpeed
+          }
+        }
+        if (keys.includes(87)) {
+          ghostStyle.top -= ghostSpeed
+          if (ctx.getImageData(ghostStyle.left, ghostStyle.top, ghost.offsetWidth, 1).data.includes(255)) {
+            ghostStyle.top += ghostSpeed
+          }
+        }
+        if (keys.includes(68)) {
+          ghostStyle.left += ghostSpeed
+          ghostStyle.transform = -1
+          if (ctx.getImageData(ghostStyle.left + ghost.offsetWidth, ghostStyle.top, 1, ghost.offsetHeight).data.includes(255)) {
+            ghostStyle.left -= ghostSpeed
+          }
+        }
+        if (keys.includes(83)) {
+          ghostStyle.top += ghostSpeed
+          if (ctx.getImageData(ghostStyle.left, ghostStyle.top + ghost.offsetHeight, ghost.offsetWidth, 1).data.includes(255)) {
+            ghostStyle.top -= ghostSpeed
+          }
+        }
 
         return {
           boyStyle: boyStyle,
+          ghostStyle: ghostStyle,
         }
       })
     }
+  }
+
+  timer() {
+    this.setState(function (state) {
+      // console.log(Math.floor(state.timerInfo / 10) + ":" + state.timerInfo % 10)
+      let minutes = Math.floor(state.timerInfo / 600)
+      let seconds = Math.floor(state.timerInfo / 10) - minutes * 60
+
+      return {
+        timerInfo: state.timerInfo - 1,
+        timerFinal: minutes + ":" + seconds + "," + state.timerInfo % 10
+      }
+    })
   }
 
   componentDidMount() {
@@ -92,6 +149,7 @@ class App extends React.Component {
       })
     }
     setInterval(this.animation, 10)
+    setInterval(this.timer, 100)
   }
 
   handleSubmit(e) {
@@ -166,6 +224,13 @@ class App extends React.Component {
     const boyStyle = {
       top: this.state.boyStyle.top + "px",
       left: this.state.boyStyle.left + "px",
+      transform: "scaleX(" + this.state.boyStyle.transform + ")",
+    }
+
+    const ghostStyle = {
+      top: this.state.ghostStyle.top + "px",
+      left: this.state.ghostStyle.left + "px",
+      transform: "scaleX(" + this.state.ghostStyle.transform + ")",
     }
     return (
       <div>
@@ -182,8 +247,10 @@ class App extends React.Component {
         <form className="game" action="">
           <div className="gameContainer">
             <canvas></canvas>
+            <p id="timer">{this.state.timerFinal}</p>
             <img src="kidmaze-01.png" id="mazeImage" onLoad={() => this.handleMazeLoad()} alt="" />
             <img id="characterBoy" style={boyStyle} src="boy.png" alt="" />
+            <img id="characterGhost" style={ghostStyle} src="ghost.png" alt="" />
           </div>
         </form>
       </div>
@@ -193,5 +260,5 @@ class App extends React.Component {
 
 export default App;
 
-// сделать передвижение для остальных клавиш
 // нарисовать дизайн лабиринта
+// добавить индикатор жизни

@@ -95,10 +95,11 @@ button:hover {
   display: none;
 }
 
-#characterBoy {
-  height: 60px;
+#characterBoy,
+#characterGhost {
+  height: 50px;
   position: absolute;
-
+  /* transition: transform 0.5s; */
 }
 
 .gameContainer {
@@ -107,4 +108,15 @@ button:hover {
   transform: translateX(-50%);
   height: 100%;
   backdrop-filter: blur(5px);
+}
+
+#timer {
+  font-family: 'Irish Grover', cursive;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translate(-125%, -50%);
+  font-size: 100px;
+  color: #ff7b00;
+  text-shadow: 0 0 25px black;
 }

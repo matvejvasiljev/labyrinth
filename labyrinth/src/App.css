@@ -12,7 +12,8 @@ body {
   background-attachment: fixed;
 }
 
-.startMenu {
+.startMenu, .endMenu {
+  transition: 1s;
   border-radius: 15px;
   border: 2px solid white;
   background-color: rgba(0, 0, 0, 0.333);
@@ -27,10 +28,21 @@ body {
   transform: translate(-50%, -50%);
   text-align: center;
 
-  display: none;
 }
 
-h1 {
+.startMenu{
+  opacity: 0;
+}
+
+.endMenu{
+  opacity: 0;
+}
+
+.menuShow{
+  opacity: 1 !important;
+}
+
+h1, h2 {
   font-size: 100px;
   font-family: 'Irish Grover', cursive;
   font-weight: normal;
@@ -44,7 +56,7 @@ h1 {
   transform: rotate(2deg);
 }
 
-h1:hover {
+h1:hover, h2:hover {
   transform: rotate(-2deg);
   background-position: bottom;
 }
@@ -91,6 +103,11 @@ button:hover {
   background-size: 100% 200%;
 }
 
+.game{
+  opacity: 0;
+  transition: 1s;
+}
+
 #mazeImage {
   display: none;
 }
@@ -99,10 +116,13 @@ button:hover {
 #characterGhost {
   height: 50px;
   position: absolute;
+  transition: opacity 0.5s;
   /* transition: transform 0.5s; */
 }
 
 .gameContainer {
+  /* display: none; */
+
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
@@ -119,4 +139,13 @@ button:hover {
   font-size: 100px;
   color: #ff7b00;
   text-shadow: 0 0 25px black;
+}
+
+.endMenu img{
+  transform: scale(0.5);
+  transition: 1.5s;
+}
+
+.endImgClass{
+  transform: scale(1) !important;
 }

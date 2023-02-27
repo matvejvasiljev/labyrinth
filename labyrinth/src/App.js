@@ -14,21 +14,33 @@ class App extends React.Component {
       timerInfo: 2 * 600,
       timerFinal: "",
 
+      catcher: "ghost",
+      winner: "",
+
+      endMenuClass: "",
+      startMenuClass: "",
+      gameFormClass: "menuShow",
+      endImgClass: "",
+
 
       boyStyle: {
         top: 20,
         left: 30,
         transform: -1,
+        opacity: 1,
       },
 
       ghostStyle: {
         top: window.innerHeight - 55 - 20,
         left: window.innerHeight - 46 - 30,
         transform: 1,
+        opacity: 1,
       }
     }
     this.arrowInterval = "";
+    this.timerInterval = "";
     this.animation = this.animation.bind(this);
+    this.gameOver = this.gameOver.bind(this);
     this.timer = this.timer.bind(this);
   }
 
@@ -40,6 +52,9 @@ class App extends React.Component {
 
     if (this.state.keys.length !== 0) {
       this.setState(function (state) {
+        let endMenuClass = state.endMenuClass
+        let gameFormClass = state.gameFormClass
+        let endImgClass = state.endImgClass
         let keys = state.keys
 
         let boyStyle = state.boyStyle
@@ -47,6 +62,12 @@ class App extends React.Component {
 
         let ghostStyle = state.ghostStyle
         let ghostSpeed = 3
+
+        let winner = state.winner
+
+        if (Math.abs(ghostStyle.left - boyStyle.left) < 30 && Math.abs(ghostStyle.top - boyStyle.top) < 50) {
+          this.gameOver(state.catcher)
+        }
 
         if (keys.includes(37)) {
           boyStyle.left -= boySpeed
@@ -74,7 +95,6 @@ class App extends React.Component {
             boyStyle.top -= boySpeed
           }
         }
-
 
 
         if (keys.includes(65)) {
@@ -105,11 +125,43 @@ class App extends React.Component {
         }
 
         return {
+          endImgClass: endImgClass,
+          endMenuClass: endMenuClass,
+          gameFormClass: gameFormClass,
           boyStyle: boyStyle,
           ghostStyle: ghostStyle,
+          winner: winner
         }
       })
     }
+  }
+
+  gameOver(currentWinner) {
+    this.setState(function (state) {
+      let boyStyle = state.boyStyle
+      let ghostStyle = state.ghostStyle
+      let endMenuClass = state.endMenuClass
+      let endImgClass = state.endImgClass
+      let gameFormClass = state.gameFormClass
+
+      clearInterval(this.timerInterval)
+
+      console.log("game over")
+      boyStyle.opacity = 0
+      ghostStyle.opacity = 0
+      endMenuClass = "menuShow"
+      endImgClass = "endImgClass"
+      gameFormClass = ""
+      // winner = currentWinner //state.catcher === "boy" ? "ghost" : "boy"
+      return {
+        boyStyle: boyStyle,
+        ghostStyle: ghostStyle,
+        endMenuClass: endMenuClass,
+        endImgClass: endImgClass,
+        gameFormClass: gameFormClass,
+        winner: currentWinner,
+      }
+    })
   }
 
   timer() {
@@ -117,6 +169,10 @@ class App extends React.Component {
       // console.log(Math.floor(state.timerInfo / 10) + ":" + state.timerInfo % 10)
       let minutes = Math.floor(state.timerInfo / 600)
       let seconds = Math.floor(state.timerInfo / 10) - minutes * 60
+
+      if (state.timerInfo < 1) {
+        this.gameOver(state.catcher === "boy" ? "ghost" : "boy")
+      }
 
       return {
         timerInfo: state.timerInfo - 1,
@@ -149,7 +205,7 @@ class App extends React.Component {
       })
     }
     setInterval(this.animation, 10)
-    setInterval(this.timer, 100)
+    this.timerInterval = setInterval(this.timer, 100)
   }
 
   handleSubmit(e) {
@@ -225,16 +281,19 @@ class App extends React.Component {
       top: this.state.boyStyle.top + "px",
       left: this.state.boyStyle.left + "px",
       transform: "scaleX(" + this.state.boyStyle.transform + ")",
+      opacity: this.state.boyStyle.opacity,
+
     }
 
     const ghostStyle = {
       top: this.state.ghostStyle.top + "px",
       left: this.state.ghostStyle.left + "px",
       transform: "scaleX(" + this.state.ghostStyle.transform + ")",
+      opacity: this.state.ghostStyle.opacity,
     }
     return (
       <div>
-        <form className="startMenu" onSubmit={(e) => this.handleSubmit(e)} action="">
+        <form className={"startMenu " + this.state.startMenuClass} onSubmit={(e) => this.handleSubmit(e)} action="">
           <h1>Old House</h1>
           <img src="boy.png" alt="" />
           <div className="wheel">
@@ -244,7 +303,13 @@ class App extends React.Component {
           <button>Start!</button>
         </form>
 
-        <form className="game" action="">
+        <form className={"endMenu " + this.state.endMenuClass} action="">
+          <p id="timer">You catched your opponent in {this.state.timeLeft}</p>
+          <img className={this.state.endImgClass} src={this.state.winner + ".png"} alt="" />
+          <h2>You won!</h2>
+        </form>
+
+        <form className={"game " + this.state.gameFormClass} action="">
           <div className="gameContainer">
             <canvas></canvas>
             <p id="timer">{this.state.timerFinal}</p>
@@ -261,4 +326,4 @@ class App extends React.Component {
 export default App;
 
 // нарисовать дизайн лабиринта
-// добавить индикатор жизни
+// доделать меню в конце игры (таймер и кнопку Restart)

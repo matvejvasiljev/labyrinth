@@ -27,19 +27,13 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-
-}
-
-.startMenu{
   opacity: 0;
-}
-
-.endMenu{
-  opacity: 0;
+  pointer-events: none;
 }
 
 .menuShow{
   opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
 h1, h2 {
@@ -106,6 +100,7 @@ button:hover {
 .game{
   opacity: 0;
   transition: 1s;
+  pointer-events: none;
 }
 
 #mazeImage {
@@ -142,10 +137,11 @@ button:hover {
 }
 
 .endMenu img{
-  transform: scale(0.5);
+  transform: scale(0.25);
   transition: 1.5s;
+
 }
 
 .endImgClass{
-  transform: scale(1) !important;
+  transform: scale(0.75) !important;
 }

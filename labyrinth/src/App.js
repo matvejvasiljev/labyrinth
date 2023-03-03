@@ -17,9 +17,9 @@ class App extends React.Component {
       catcher: "ghost",
       winner: "",
 
+      startMenuClass: "menuShow",
       endMenuClass: "",
-      startMenuClass: "",
-      gameFormClass: "menuShow",
+      gameFormClass: "",
       endImgClass: "",
 
 
@@ -50,13 +50,12 @@ class App extends React.Component {
     let ghost = document.getElementById("characterGhost")
 
 
-    if (this.state.keys.length !== 0) {
+    if (this.state.keys.length > 0 && this.state.gameFormClass !== "") {
       this.setState(function (state) {
         let endMenuClass = state.endMenuClass
         let gameFormClass = state.gameFormClass
         let endImgClass = state.endImgClass
         let keys = state.keys
-
         let boyStyle = state.boyStyle
         let boySpeed = 3
 
@@ -65,7 +64,7 @@ class App extends React.Component {
 
         let winner = state.winner
 
-        if (Math.abs(ghostStyle.left - boyStyle.left) < 30 && Math.abs(ghostStyle.top - boyStyle.top) < 50) {
+        if (Math.abs(ghostStyle.left - boyStyle.left) < 50 && Math.abs(ghostStyle.top - boyStyle.top) < 50) {
           this.gameOver(state.catcher)
         }
 
@@ -147,8 +146,6 @@ class App extends React.Component {
       clearInterval(this.timerInterval)
 
       console.log("game over")
-      boyStyle.opacity = 0
-      ghostStyle.opacity = 0
       endMenuClass = "menuShow"
       endImgClass = "endImgClass"
       gameFormClass = ""
@@ -208,45 +205,74 @@ class App extends React.Component {
     this.timerInterval = setInterval(this.timer, 100)
   }
 
+  restartGame(e) {
+    e.preventDefault()
+    this.setState(function (state) {
+      return{
+        startMenuClass: "menuShow",
+        endMenuClass: "",
+        catcher: "",
+      }
+    })
+  }
+
   handleSubmit(e) {
     e.preventDefault()
     clearInterval(this.arrowInterval)
 
     this.setState({
       arrowPoint: Math.floor(Math.random() * 6),
-      // arrowPoint: 5,
+      // arrowPoint: 2,
 
     }, function () {
+      let catcher = this.state.catcher
       let arrowSpeed = 0
       switch (this.state.arrowPoint) {
         case 0:
           arrowSpeed = 15.7;
+          catcher = "ghost"
           break;
         case 1:
           arrowSpeed = 16.3;
+          catcher = "ghost"
           break;
         case 2:
           arrowSpeed = 16.8;
+          catcher = "ghost"
           break;
         case 3:
           arrowSpeed = 19.5;
+          catcher = "boy"
           break;
         case 4:
           arrowSpeed = 12.7;
+          catcher = "boy"
           break;
         case 5:
           arrowSpeed = 13.1;
+          catcher = "boy"
           break;
         default:
           arrowSpeed = 0;
       }
-      this.setState({ arrowSpeed: arrowSpeed })
+      this.setState({
+        arrowSpeed: arrowSpeed,
+        catcher: catcher
+      }, function () {
+        console.log(catcher)
+      })
       this.arrowInterval = setInterval(() => {
         this.setState(function (state) {
+          let startMenuClass = state.startMenuClass
+          let gameFormClass = state.gameFormClass
           if (state.arrowSpeed <= 0.1) {
+            startMenuClass = ""
+            gameFormClass = "menuShow"
             clearInterval(this.arrowInterval)
           }
           return {
+            startMenuClass: startMenuClass,
+            gameFormClass: gameFormClass,
             arrowAngle: state.arrowAngle + state.arrowSpeed,
             arrowSpeed: state.arrowSpeed * 0.98,
           }
@@ -263,7 +289,7 @@ class App extends React.Component {
 
     canvas.width = window.innerHeight
     canvas.height = window.innerHeight
-    let ctx = canvas.getContext("2d")
+    let ctx = canvas.getContext("2d", {willReadFrequently: true})
     this.setState({
       canvas: canvas,
       ctx: ctx,
@@ -307,6 +333,7 @@ class App extends React.Component {
           <p id="timer">You catched your opponent in {this.state.timeLeft}</p>
           <img className={this.state.endImgClass} src={this.state.winner + ".png"} alt="" />
           <h2>You won!</h2>
+          <button onClick={(e) => this.restartGame(e)}>Restart</button>
         </form>
 
         <form className={"game " + this.state.gameFormClass} action="">

@@ -13,6 +13,7 @@ class App extends React.Component {
       keys: [],
       timerInfo: 2 * 600,
       timerFinal: "",
+      timeLeft: 0,
 
       catcher: "ghost",
       winner: "",
@@ -22,6 +23,15 @@ class App extends React.Component {
       gameFormClass: "",
       endImgClass: "",
 
+      potionCoordinates: [
+        [745, 1095],
+        [200, 920],
+        [735, 125],
+        [555, 475],
+        [200, 215],
+      ],
+
+      potionsCollected: [],
 
       boyStyle: {
         top: 20,
@@ -62,10 +72,16 @@ class App extends React.Component {
         let ghostStyle = state.ghostStyle
         let ghostSpeed = 3
 
+        let potionsCollected = state.potionsCollected
         let winner = state.winner
 
-        if (Math.abs(ghostStyle.left - boyStyle.left) < 50 && Math.abs(ghostStyle.top - boyStyle.top) < 50) {
-          this.gameOver(state.catcher)
+        for (let i in state.potionCoordinates) {
+          if (!potionsCollected.includes(parseInt(i))) {
+            if (Math.abs(state.potionCoordinates[i][0] - state.boyStyle.left) < 50 && Math.abs(state.potionCoordinates[i][1] - state.boyStyle.top) < 50) {
+              potionsCollected.push(parseInt(i))
+              console.log(potionsCollected)
+            }
+          }
         }
 
         if (keys.includes(37)) {
@@ -129,7 +145,12 @@ class App extends React.Component {
           gameFormClass: gameFormClass,
           boyStyle: boyStyle,
           ghostStyle: ghostStyle,
-          winner: winner
+          winner: winner,
+          potionsCollected: potionsCollected,
+        }
+      }, function () {
+        if (Math.abs(this.state.ghostStyle.left - this.state.boyStyle.left) < 50 && Math.abs(this.state.ghostStyle.top - this.state.boyStyle.top) < 50) {
+          this.gameOver(this.state.catcher)
         }
       })
     }
@@ -139,9 +160,10 @@ class App extends React.Component {
     this.setState(function (state) {
       let boyStyle = state.boyStyle
       let ghostStyle = state.ghostStyle
-      let endMenuClass = state.endMenuClass
       let endImgClass = state.endImgClass
+      let endMenuClass = state.endMenuClass
       let gameFormClass = state.gameFormClass
+      let timeLeft = (1200 - state.timerInfo) / 10
 
       clearInterval(this.timerInterval)
 
@@ -151,6 +173,7 @@ class App extends React.Component {
       gameFormClass = ""
       // winner = currentWinner //state.catcher === "boy" ? "ghost" : "boy"
       return {
+        timeLeft: timeLeft,
         boyStyle: boyStyle,
         ghostStyle: ghostStyle,
         endMenuClass: endMenuClass,
@@ -167,13 +190,13 @@ class App extends React.Component {
       let minutes = Math.floor(state.timerInfo / 600)
       let seconds = Math.floor(state.timerInfo / 10) - minutes * 60
 
-      if (state.timerInfo < 1) {
-        this.gameOver(state.catcher === "boy" ? "ghost" : "boy")
-      }
-
       return {
         timerInfo: state.timerInfo - 1,
         timerFinal: minutes + ":" + seconds + "," + state.timerInfo % 10
+      }
+    }, function () {
+      if (this.state.timerInfo < 1) {
+        this.gameOver(this.state.catcher === "boy" ? "ghost" : "boy")
       }
     })
   }
@@ -202,13 +225,23 @@ class App extends React.Component {
       })
     }
     setInterval(this.animation, 10)
-    this.timerInterval = setInterval(this.timer, 100)
   }
 
   restartGame(e) {
     e.preventDefault()
     this.setState(function (state) {
-      return{
+      let boyStyle = state.boyStyle
+      boyStyle.top = 20
+      boyStyle.left = 30
+
+      let ghostStyle = state.ghostStyle
+      ghostStyle.top = window.innerHeight - 55 - 20
+      ghostStyle.left = window.innerHeight - 46 - 30
+
+      return {
+        arrowAngle: -90,
+        boyStyle: boyStyle,
+        timerInfo: 2 * 600,
         startMenuClass: "menuShow",
         endMenuClass: "",
         catcher: "",
@@ -268,6 +301,7 @@ class App extends React.Component {
           if (state.arrowSpeed <= 0.1) {
             startMenuClass = ""
             gameFormClass = "menuShow"
+            this.timerInterval = setInterval(this.timer, 100)
             clearInterval(this.arrowInterval)
           }
           return {
@@ -289,7 +323,7 @@ class App extends React.Component {
 
     canvas.width = window.innerHeight
     canvas.height = window.innerHeight
-    let ctx = canvas.getContext("2d", {willReadFrequently: true})
+    let ctx = canvas.getContext("2d", { willReadFrequently: true })
     this.setState({
       canvas: canvas,
       ctx: ctx,
@@ -317,6 +351,7 @@ class App extends React.Component {
       transform: "scaleX(" + this.state.ghostStyle.transform + ")",
       opacity: this.state.ghostStyle.opacity,
     }
+
     return (
       <div>
         <form className={"startMenu " + this.state.startMenuClass} onSubmit={(e) => this.handleSubmit(e)} action="">
@@ -330,19 +365,27 @@ class App extends React.Component {
         </form>
 
         <form className={"endMenu " + this.state.endMenuClass} action="">
-          <p id="timer">You catched your opponent in {this.state.timeLeft}</p>
+          <p id="endTimer">You catched your opponent in {this.state.timeLeft} seconds</p>
           <img className={this.state.endImgClass} src={this.state.winner + ".png"} alt="" />
           <h2>You won!</h2>
           <button onClick={(e) => this.restartGame(e)}>Restart</button>
         </form>
 
         <form className={"game " + this.state.gameFormClass} action="">
-          <div className="gameContainer">
+          <div onClick={(e) => console.log(e.nativeEvent.offsetX, e.nativeEvent.offsetY)} className="gameContainer">
             <canvas></canvas>
             <p id="timer">{this.state.timerFinal}</p>
-            <img src="kidmaze-01.png" id="mazeImage" onLoad={() => this.handleMazeLoad()} alt="" />
+            <img src="kidmaze.png" id="mazeImage" onLoad={() => this.handleMazeLoad()} alt="" />
             <img id="characterBoy" style={boyStyle} src="boy.png" alt="" />
             <img id="characterGhost" style={ghostStyle} src="ghost.png" alt="" />
+            {
+              this.state.potionCoordinates.map((coordinate, id) => {
+                if (!this.state.potionsCollected.includes(id)) {
+                  return <img style={{ left: coordinate[0] + "px", top: coordinate[1] + "px" }} key={id} className="potionSpeed" src="potionSpeed.svg" alt="" />
+                }
+                return null
+              })
+            }
           </div>
         </form>
       </div>
@@ -352,5 +395,4 @@ class App extends React.Component {
 
 export default App;
 
-// нарисовать дизайн лабиринта
-// доделать меню в конце игры (таймер и кнопку Restart)
+// нарисовать дизайн лабиринта!

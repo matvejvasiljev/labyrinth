@@ -12,7 +12,8 @@ body {
   background-attachment: fixed;
 }
 
-.startMenu, .endMenu {
+.startMenu,
+.endMenu {
   transition: 1s;
   border-radius: 15px;
   border: 2px solid white;
@@ -29,14 +30,16 @@ body {
   text-align: center;
   opacity: 0;
   pointer-events: none;
+  z-index: 9;
 }
 
-.menuShow{
+.menuShow {
   opacity: 1 !important;
   pointer-events: auto !important;
 }
 
-h1, h2 {
+h1,
+h2 {
   font-size: 100px;
   font-family: 'Irish Grover', cursive;
   font-weight: normal;
@@ -50,7 +53,8 @@ h1, h2 {
   transform: rotate(2deg);
 }
 
-h1:hover, h2:hover {
+h1:hover,
+h2:hover {
   transform: rotate(-2deg);
   background-position: bottom;
 }
@@ -97,10 +101,10 @@ button:hover {
   background-size: 100% 200%;
 }
 
-.game{
+.game {
   opacity: 0;
   transition: 1s;
-  pointer-events: none;
+  /* pointer-events: none; */
 }
 
 #mazeImage {
@@ -116,13 +120,13 @@ button:hover {
 }
 
 .gameContainer {
-  /* display: none; */
-
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
   height: 100%;
-  backdrop-filter: blur(5px);
+  background-image: url("../public/kidmazeBG.png");
+  background-size: contain;
+  /* backdrop-filter: blur(5px); */
 }
 
 #timer {
@@ -136,12 +140,26 @@ button:hover {
   text-shadow: 0 0 25px black;
 }
 
-.endMenu img{
+#endTimer {
+  font-family: 'Irish Grover', cursive;
+  font-size: 50px;
+  color: #ff7b00;
+  text-shadow: 0 0 25px black;
+}
+
+.endMenu img {
   transform: scale(0.25);
   transition: 1.5s;
 
 }
 
-.endImgClass{
+.endImgClass {
   transform: scale(0.75) !important;
+}
+
+.potionSpeed{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 15px;
 }

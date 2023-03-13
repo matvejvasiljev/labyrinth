@@ -32,6 +32,8 @@ class App extends React.Component {
       ],
 
       potionsCollected: [],
+      potionSound: "",
+      potionTimer: 0,
 
       boyStyle: {
         top: 20,
@@ -39,20 +41,40 @@ class App extends React.Component {
         transform: -1,
         opacity: 1,
       },
+      boySpeed: 0,
 
       ghostStyle: {
         top: window.innerHeight - 55 - 20,
         left: window.innerHeight - 46 - 30,
         transform: 1,
         opacity: 1,
-      }
+      },
+      ghostSpeed: 0,
     }
     this.arrowInterval = "";
     this.timerInterval = "";
     this.animation = this.animation.bind(this);
     this.gameOver = this.gameOver.bind(this);
+    this.sound = this.sound.bind(this);
     this.timer = this.timer.bind(this);
   }
+
+  sound(src) {
+    console.log(src)
+    this.sound = document.createElement("audio");
+    this.sound.src = src;
+    this.sound.setAttribute("preload", "auto");
+    this.sound.setAttribute("controls", "none");
+    this.sound.style.display = "none";
+    document.body.appendChild(this.sound);
+    this.play = function () {
+      this.sound.play();
+    }
+    this.stop = function () {
+      this.sound.pause();
+    }
+  }
+
 
   animation() {
     let ctx = this.state.ctx
@@ -66,22 +88,48 @@ class App extends React.Component {
         let gameFormClass = state.gameFormClass
         let endImgClass = state.endImgClass
         let keys = state.keys
+        let winner = state.winner
+
         let boyStyle = state.boyStyle
-        let boySpeed = 3
 
         let ghostStyle = state.ghostStyle
-        let ghostSpeed = 3
+        let boySpeed = 3
+        let ghostSpeed = 2.5
+
+        if (state.catcher === "boy") {
+          ghostSpeed = 2.5
+        }
+        else{
+          boySpeed = 2.5
+        }
+
+        let runnerStyle = (state.catcher === "boy" ? ghostStyle : boyStyle)
+        console.log(runnerStyle);
 
         let potionsCollected = state.potionsCollected
-        let winner = state.winner
+        let potionTimer = state.potionTimer
 
         for (let i in state.potionCoordinates) {
           if (!potionsCollected.includes(parseInt(i))) {
-            if (Math.abs(state.potionCoordinates[i][0] - state.boyStyle.left) < 50 && Math.abs(state.potionCoordinates[i][1] - state.boyStyle.top) < 50) {
+            if (Math.abs(state.potionCoordinates[i][0] - runnerStyle.left) < 50 && Math.abs(state.potionCoordinates[i][1] - runnerStyle.top) < 50) {
               potionsCollected.push(parseInt(i))
+              setTimeout(function () {
+                potionsCollected.splice(potionsCollected.indexOf(parseInt(i)), 1)
+              }, 5000)
+              potionTimer = 300
               console.log(potionsCollected)
             }
           }
+        }
+
+        if (potionTimer > 0) {
+          if (state.catcher === "boy") {
+            ghostSpeed = 4
+          }
+          else{
+            boySpeed = 4
+          }
+          potionTimer -= 1
         }
 
         if (keys.includes(37)) {
@@ -144,9 +192,11 @@ class App extends React.Component {
           endMenuClass: endMenuClass,
           gameFormClass: gameFormClass,
           boyStyle: boyStyle,
+          boySpeed: boySpeed,
           ghostStyle: ghostStyle,
           winner: winner,
           potionsCollected: potionsCollected,
+          potionTimer: potionTimer,
         }
       }, function () {
         if (Math.abs(this.state.ghostStyle.left - this.state.boyStyle.left) < 50 && Math.abs(this.state.ghostStyle.top - this.state.boyStyle.top) < 50) {
@@ -202,6 +252,13 @@ class App extends React.Component {
   }
 
   componentDidMount() {
+    // this.setState(function (state) {
+    //   return {
+    //     potionSound: new this.sound("Collect.wav")
+    //   }
+    // })
+    // this.sound("Collect.wav")
+
     document.onkeydown = (e) => {
       // console.log(e.keyCode)
       this.setState(function (state) {
@@ -209,7 +266,6 @@ class App extends React.Component {
         if (!keys.includes(e.keyCode)) {
           keys.push(e.keyCode)
         }
-        console.log(keys)
         return {
           keys: keys,
         }
@@ -226,6 +282,7 @@ class App extends React.Component {
     }
     setInterval(this.animation, 10)
   }
+
 
   restartGame(e) {
     e.preventDefault()
@@ -395,4 +452,5 @@ class App extends React.Component {
 
 export default App;
 
-// нарисовать дизайн лабиринта!
+//   нарисовать дизайн лабиринта
+// сделать чтобы catcher не мог собирать зелья

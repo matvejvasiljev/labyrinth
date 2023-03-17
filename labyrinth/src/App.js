@@ -46,6 +46,7 @@ class App extends React.Component {
       ghostStyle: {
         top: window.innerHeight - 55 - 20,
         left: window.innerHeight - 46 - 30,
+
         transform: 1,
         opacity: 1,
       },
@@ -53,27 +54,28 @@ class App extends React.Component {
     }
     this.arrowInterval = "";
     this.timerInterval = "";
+    this.collectAudio = new Audio("../public/Collect.wav")
     this.animation = this.animation.bind(this);
     this.gameOver = this.gameOver.bind(this);
-    this.sound = this.sound.bind(this);
+    // this.sound = this.sound.bind(this);
     this.timer = this.timer.bind(this);
   }
 
-  sound(src) {
-    console.log(src)
-    this.sound = document.createElement("audio");
-    this.sound.src = src;
-    this.sound.setAttribute("preload", "auto");
-    this.sound.setAttribute("controls", "none");
-    this.sound.style.display = "none";
-    document.body.appendChild(this.sound);
-    this.play = function () {
-      this.sound.play();
-    }
-    this.stop = function () {
-      this.sound.pause();
-    }
-  }
+  // sound(src) {
+  //   console.log(src)
+  //   this.sound = document.createElement("audio");
+  //   this.sound.src = src;
+  //   this.sound.setAttribute("preload", "auto");
+  //   this.sound.setAttribute("controls", "none");
+  //   this.sound.style.display = "none";
+  //   document.body.appendChild(this.sound);
+  //   this.play = function () {
+  //     this.sound.play();
+  //   }
+  //   this.stop = function () {
+  //     this.sound.pause();
+  //   }
+  // }
 
 
   animation() {
@@ -91,23 +93,27 @@ class App extends React.Component {
         let winner = state.winner
 
         let boyStyle = state.boyStyle
-
         let ghostStyle = state.ghostStyle
-        let boySpeed = 3
-        let ghostSpeed = 2.5
+
+        let boySpeed = 2.75
+        let ghostSpeed = 3
 
         if (state.catcher === "boy") {
-          ghostSpeed = 2.5
-        }
-        else{
-          boySpeed = 2.5
+          ghostSpeed = 2.75
+          boySpeed = 3
         }
 
         let runnerStyle = (state.catcher === "boy" ? ghostStyle : boyStyle)
-        console.log(runnerStyle);
 
         let potionsCollected = state.potionsCollected
         let potionTimer = state.potionTimer
+
+        let boyColorCheck = 255
+        let ghostColorCheck = 10
+        if (state.catcher === "boy") {
+          boyColorCheck = 10
+          ghostColorCheck = 255
+        }
 
         for (let i in state.potionCoordinates) {
           if (!potionsCollected.includes(parseInt(i))) {
@@ -117,7 +123,6 @@ class App extends React.Component {
                 potionsCollected.splice(potionsCollected.indexOf(parseInt(i)), 1)
               }, 5000)
               potionTimer = 300
-              console.log(potionsCollected)
             }
           }
         }
@@ -126,63 +131,63 @@ class App extends React.Component {
           if (state.catcher === "boy") {
             ghostSpeed = 4
           }
-          else{
+          else {
             boySpeed = 4
           }
           potionTimer -= 1
         }
 
+
         if (keys.includes(37)) {
           boyStyle.left -= boySpeed
           boyStyle.transform = 1
-          if (ctx.getImageData(boyStyle.left, boyStyle.top, 1, boy.offsetHeight).data.includes(255)) {
+          if (ctx.getImageData(boyStyle.left, boyStyle.top, 1, boy.offsetHeight).data.includes(boyColorCheck)) {
             boyStyle.left += boySpeed
           }
         }
         if (keys.includes(38)) {
           boyStyle.top -= boySpeed
-          if (ctx.getImageData(boyStyle.left, boyStyle.top, boy.offsetWidth, 1).data.includes(255)) {
+          if (ctx.getImageData(boyStyle.left, boyStyle.top, boy.offsetWidth, 1).data.includes(boyColorCheck)) {
             boyStyle.top += boySpeed
           }
         }
         if (keys.includes(39)) {
           boyStyle.left += boySpeed
           boyStyle.transform = -1
-          if (ctx.getImageData(boyStyle.left + boy.offsetWidth, boyStyle.top, 1, boy.offsetHeight).data.includes(255)) {
+          if (ctx.getImageData(boyStyle.left + boy.offsetWidth, boyStyle.top, 1, boy.offsetHeight).data.includes(boyColorCheck)) {
             boyStyle.left -= boySpeed
           }
         }
         if (keys.includes(40)) {
           boyStyle.top += boySpeed
-          if (ctx.getImageData(boyStyle.left, boyStyle.top + boy.offsetHeight, boy.offsetWidth, 1).data.includes(255)) {
+          if (ctx.getImageData(boyStyle.left, boyStyle.top + boy.offsetHeight, boy.offsetWidth, 1).data.includes(boyColorCheck)) {
             boyStyle.top -= boySpeed
           }
         }
 
-
         if (keys.includes(65)) {
           ghostStyle.left -= ghostSpeed
           ghostStyle.transform = 1
-          if (ctx.getImageData(ghostStyle.left, ghostStyle.top, 1, ghost.offsetHeight).data.includes(255)) {
+          if (ctx.getImageData(ghostStyle.left, ghostStyle.top, 1, ghost.offsetHeight).data.includes(ghostColorCheck)) {
             ghostStyle.left += ghostSpeed
           }
         }
         if (keys.includes(87)) {
           ghostStyle.top -= ghostSpeed
-          if (ctx.getImageData(ghostStyle.left, ghostStyle.top, ghost.offsetWidth, 1).data.includes(255)) {
+          if (ctx.getImageData(ghostStyle.left, ghostStyle.top, ghost.offsetWidth, 1).data.includes(ghostColorCheck)) {
             ghostStyle.top += ghostSpeed
           }
         }
         if (keys.includes(68)) {
           ghostStyle.left += ghostSpeed
           ghostStyle.transform = -1
-          if (ctx.getImageData(ghostStyle.left + ghost.offsetWidth, ghostStyle.top, 1, ghost.offsetHeight).data.includes(255)) {
+          if (ctx.getImageData(ghostStyle.left + ghost.offsetWidth, ghostStyle.top, 1, ghost.offsetHeight).data.includes(ghostColorCheck)) {
             ghostStyle.left -= ghostSpeed
           }
         }
         if (keys.includes(83)) {
           ghostStyle.top += ghostSpeed
-          if (ctx.getImageData(ghostStyle.left, ghostStyle.top + ghost.offsetHeight, ghost.offsetWidth, 1).data.includes(255)) {
+          if (ctx.getImageData(ghostStyle.left, ghostStyle.top + ghost.offsetHeight, ghost.offsetWidth, 1).data.includes(ghostColorCheck)) {
             ghostStyle.top -= ghostSpeed
           }
         }
@@ -309,6 +314,8 @@ class App extends React.Component {
   handleSubmit(e) {
     e.preventDefault()
     clearInterval(this.arrowInterval)
+    // console.log(this.collectAudio)
+    // this.collectAudio.play()
 
     this.setState({
       arrowPoint: Math.floor(Math.random() * 6),
@@ -373,7 +380,6 @@ class App extends React.Component {
   }
 
   handleMazeLoad() {
-    // console.log("image loaded!");
     let canvas = document.getElementsByTagName("canvas")[0]
     let gameContainer = document.getElementsByClassName("gameContainer")[0]
     gameContainer.style.width = window.innerHeight + "px"
@@ -452,5 +458,6 @@ class App extends React.Component {
 
 export default App;
 
-//   нарисовать дизайн лабиринта
-// сделать чтобы catcher не мог собирать зелья
+//    нарисовать дизайн лабиринта
+// попробовать доделать звук зелья
+// починить текст когда побеждает убегающий

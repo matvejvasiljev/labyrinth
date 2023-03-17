@@ -114,6 +114,8 @@ button:hover {
 #characterBoy,
 #characterGhost {
   height: 50px;
+  width: 46px;
+  object-fit: contain;
   position: absolute;
   transition: opacity 0.5s;
   /* transition: transform 0.5s; */

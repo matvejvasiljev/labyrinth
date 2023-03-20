@@ -30,9 +30,7 @@ class App extends React.Component {
         [555, 475],
         [200, 215],
       ],
-
       potionsCollected: [],
-      potionSound: "",
       potionTimer: 0,
 
       boyStyle: {
@@ -42,41 +40,24 @@ class App extends React.Component {
         opacity: 1,
       },
       boySpeed: 0,
+      boyClass: "",
 
       ghostStyle: {
         top: window.innerHeight - 55 - 20,
         left: window.innerHeight - 46 - 30,
-
         transform: 1,
         opacity: 1,
       },
       ghostSpeed: 0,
+      ghostClass: "",
     }
     this.arrowInterval = "";
     this.timerInterval = "";
-    this.collectAudio = new Audio("../public/Collect.wav")
+    this.collectAudio = new Audio("/Collect.mp3")
     this.animation = this.animation.bind(this);
     this.gameOver = this.gameOver.bind(this);
-    // this.sound = this.sound.bind(this);
     this.timer = this.timer.bind(this);
   }
-
-  // sound(src) {
-  //   console.log(src)
-  //   this.sound = document.createElement("audio");
-  //   this.sound.src = src;
-  //   this.sound.setAttribute("preload", "auto");
-  //   this.sound.setAttribute("controls", "none");
-  //   this.sound.style.display = "none";
-  //   document.body.appendChild(this.sound);
-  //   this.play = function () {
-  //     this.sound.play();
-  //   }
-  //   this.stop = function () {
-  //     this.sound.pause();
-  //   }
-  // }
-
 
   animation() {
     let ctx = this.state.ctx
@@ -97,23 +78,19 @@ class App extends React.Component {
 
         let boySpeed = 2.75
         let ghostSpeed = 3
-
+        let boyColorCheck = 255
+        let ghostColorCheck = 10
         if (state.catcher === "boy") {
           ghostSpeed = 2.75
           boySpeed = 3
+          boyColorCheck = 10
+          ghostColorCheck = 255
         }
 
         let runnerStyle = (state.catcher === "boy" ? ghostStyle : boyStyle)
 
         let potionsCollected = state.potionsCollected
         let potionTimer = state.potionTimer
-
-        let boyColorCheck = 255
-        let ghostColorCheck = 10
-        if (state.catcher === "boy") {
-          boyColorCheck = 10
-          ghostColorCheck = 255
-        }
 
         for (let i in state.potionCoordinates) {
           if (!potionsCollected.includes(parseInt(i))) {
@@ -122,6 +99,7 @@ class App extends React.Component {
               setTimeout(function () {
                 potionsCollected.splice(potionsCollected.indexOf(parseInt(i)), 1)
               }, 5000)
+              this.collectAudio.play()
               potionTimer = 300
             }
           }
@@ -226,7 +204,6 @@ class App extends React.Component {
       endMenuClass = "menuShow"
       endImgClass = "endImgClass"
       gameFormClass = ""
-      // winner = currentWinner //state.catcher === "boy" ? "ghost" : "boy"
       return {
         timeLeft: timeLeft,
         boyStyle: boyStyle,
@@ -241,7 +218,6 @@ class App extends React.Component {
 
   timer() {
     this.setState(function (state) {
-      // console.log(Math.floor(state.timerInfo / 10) + ":" + state.timerInfo % 10)
       let minutes = Math.floor(state.timerInfo / 600)
       let seconds = Math.floor(state.timerInfo / 10) - minutes * 60
 
@@ -257,15 +233,9 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    // this.setState(function (state) {
-    //   return {
-    //     potionSound: new this.sound("Collect.wav")
-    //   }
-    // })
-    // this.sound("Collect.wav")
+    this.collectAudio.volume = 0.2
 
     document.onkeydown = (e) => {
-      // console.log(e.keyCode)
       this.setState(function (state) {
         let keys = state.keys
         if (!keys.includes(e.keyCode)) {
@@ -314,16 +284,18 @@ class App extends React.Component {
   handleSubmit(e) {
     e.preventDefault()
     clearInterval(this.arrowInterval)
-    // console.log(this.collectAudio)
-    // this.collectAudio.play()
 
     this.setState({
       arrowPoint: Math.floor(Math.random() * 6),
-      // arrowPoint: 2,
 
     }, function () {
       let catcher = this.state.catcher
+      let boyClass = this.state.boyClass
+      let ghostClass = this.state.ghostClass
       let arrowSpeed = 0
+      let startMenuClass = this.state.startMenuClass
+      let gameFormClass = this.state.gameFormClass
+
       switch (this.state.arrowPoint) {
         case 0:
           arrowSpeed = 15.7;
@@ -352,6 +324,7 @@ class App extends React.Component {
         default:
           arrowSpeed = 0;
       }
+
       this.setState({
         arrowSpeed: arrowSpeed,
         catcher: catcher
@@ -360,11 +333,15 @@ class App extends React.Component {
       })
       this.arrowInterval = setInterval(() => {
         this.setState(function (state) {
-          let startMenuClass = state.startMenuClass
-          let gameFormClass = state.gameFormClass
+
           if (state.arrowSpeed <= 0.1) {
-            startMenuClass = ""
-            gameFormClass = "menuShow"
+            if (catcher === "ghost") {
+              ghostClass = "catcherSelect"
+            }
+            else {
+              boyClass = "catcherSelect"
+            }
+
             this.timerInterval = setInterval(this.timer, 100)
             clearInterval(this.arrowInterval)
           }
@@ -373,7 +350,19 @@ class App extends React.Component {
             gameFormClass: gameFormClass,
             arrowAngle: state.arrowAngle + state.arrowSpeed,
             arrowSpeed: state.arrowSpeed * 0.98,
+            boyClass: boyClass,
+            ghostClass: ghostClass
           }
+        }, function () {
+          if (boyClass === "catcherSelect" || ghostClass === "catcherSelect")
+            setTimeout(() => {
+              startMenuClass = ""
+              gameFormClass = "menuShow"
+              this.setState({
+                startMenuClass: startMenuClass,
+                gameFormClass: gameFormClass,
+              })
+            }, 1500);
         })
       }, 10);
     })
@@ -415,20 +404,25 @@ class App extends React.Component {
       opacity: this.state.ghostStyle.opacity,
     }
 
+    let endingText = "You catched your opponent in " + this.state.timeLeft + " seconds"
+    if (this.state.timerInfo < 1) {
+      endingText = "You ran away from your opponent"
+    }
+
     return (
       <div>
         <form className={"startMenu " + this.state.startMenuClass} onSubmit={(e) => this.handleSubmit(e)} action="">
           <h1>Old House</h1>
-          <img src="boy.png" alt="" />
+          <img className={this.state.boyClass} src="boy.png" alt="" />
           <div className="wheel">
             <img id="arrow" style={arrowStyle} src="arrow.png" alt="" />
           </div>
-          <img src="ghost.png" alt="" />
+          <img className={this.state.ghostClass} src="ghost.png" alt="" />
           <button>Start!</button>
         </form>
 
         <form className={"endMenu " + this.state.endMenuClass} action="">
-          <p id="endTimer">You catched your opponent in {this.state.timeLeft} seconds</p>
+          <p id="endTimer">{endingText}</p>
           <img className={this.state.endImgClass} src={this.state.winner + ".png"} alt="" />
           <h2>You won!</h2>
           <button onClick={(e) => this.restartGame(e)}>Restart</button>
@@ -439,8 +433,8 @@ class App extends React.Component {
             <canvas></canvas>
             <p id="timer">{this.state.timerFinal}</p>
             <img src="kidmaze.png" id="mazeImage" onLoad={() => this.handleMazeLoad()} alt="" />
-            <img id="characterBoy" style={boyStyle} src="boy.png" alt="" />
-            <img id="characterGhost" style={ghostStyle} src="ghost.png" alt="" />
+            <img className={this.state.boyClass} id="characterBoy" style={boyStyle} src="boy.png" alt="" />
+            <img className={this.state.ghostClass} id="characterGhost" style={ghostStyle} src="ghost.png" alt="" />
             {
               this.state.potionCoordinates.map((coordinate, id) => {
                 if (!this.state.potionsCollected.includes(id)) {
@@ -458,6 +452,4 @@ class App extends React.Component {
 
 export default App;
 
-//    нарисовать дизайн лабиринта
-// попробовать доделать звук зелья
-// починить текст когда побеждает убегающий
+// заменить все цифры на % в размерах экрана

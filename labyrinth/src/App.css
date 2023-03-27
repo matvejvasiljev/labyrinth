@@ -113,9 +113,7 @@ button:hover {
 
 #characterBoy,
 #characterGhost {
-  height: 50px;
-  width: 46px;
-  object-fit: contain;
+  height: 5%;
   position: absolute;
   transition: opacity 0.5s;
   /* transition: transform 0.5s; */
@@ -127,7 +125,7 @@ button:hover {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  height: 100%;
+  height: 90%;
   background-image: url("../public/kidmazeBG.png");
   background-size: contain;
   /* backdrop-filter: blur(5px); */
@@ -161,28 +159,29 @@ button:hover {
   transform: scale(0.75) !important;
 }
 
-.potionSpeed{
+.potionSpeed {
   position: fixed;
   top: 0;
   left: 0;
-  width: 15px;
+  height: 3%;
 }
 
-.catcherSelect{
+.catcherSelect {
   animation: 3s 1 catcherSelect;
   filter: drop-shadow(0px 2px 5px rgba(255, 0, 0, 0.8)) !important;
   transition: 1s;
 }
 
 @keyframes catcherSelect {
-  0%{
+  0% {
     transform: scale(1);
   }
-  50%{
+
+  50% {
     transform: scale(1.2);
   }
 
-  100%{
+  100% {
     transform: scale(1);
   }
 }

@@ -24,18 +24,18 @@ class App extends React.Component {
       endImgClass: "",
 
       potionCoordinates: [
-        [745, 1095],
-        [200, 920],
-        [735, 125],
-        [555, 475],
-        [200, 215],
+        [18.5, 18],
+        [64.4, 10.5],
+        [18.5, 79],
+        [64.4, 94],
+        [49, 41],
       ],
       potionsCollected: [],
       potionTimer: 0,
 
       boyStyle: {
-        top: 20,
-        left: 30,
+        top: 2,
+        left: 2,
         transform: -1,
         opacity: 1,
       },
@@ -43,8 +43,8 @@ class App extends React.Component {
       boyClass: "",
 
       ghostStyle: {
-        top: window.innerHeight - 55 - 20,
-        left: window.innerHeight - 46 - 30,
+        top: 93,
+        left: 93,
         transform: 1,
         opacity: 1,
       },
@@ -64,6 +64,8 @@ class App extends React.Component {
     let boy = document.getElementById("characterBoy")
     let ghost = document.getElementById("characterGhost")
 
+    let gameHeight = window.innerHeight / 9 * 10
+
 
     if (this.state.keys.length > 0 && this.state.gameFormClass !== "") {
       this.setState(function (state) {
@@ -76,13 +78,13 @@ class App extends React.Component {
         let boyStyle = state.boyStyle
         let ghostStyle = state.ghostStyle
 
-        let boySpeed = 2.75
-        let ghostSpeed = 3
+        let boySpeed = 0.33
+        let ghostSpeed = 0.37
         let boyColorCheck = 255
         let ghostColorCheck = 10
         if (state.catcher === "boy") {
-          ghostSpeed = 2.75
-          boySpeed = 3
+          ghostSpeed = 0.33
+          boySpeed = 0.37
           boyColorCheck = 10
           ghostColorCheck = 255
         }
@@ -94,7 +96,7 @@ class App extends React.Component {
 
         for (let i in state.potionCoordinates) {
           if (!potionsCollected.includes(parseInt(i))) {
-            if (Math.abs(state.potionCoordinates[i][0] - runnerStyle.left) < 50 && Math.abs(state.potionCoordinates[i][1] - runnerStyle.top) < 50) {
+            if (Math.abs(state.potionCoordinates[i][0] - runnerStyle.left) < 5 && Math.abs(state.potionCoordinates[i][1] - runnerStyle.top) < 5) {
               potionsCollected.push(parseInt(i))
               setTimeout(function () {
                 potionsCollected.splice(potionsCollected.indexOf(parseInt(i)), 1)
@@ -107,10 +109,10 @@ class App extends React.Component {
 
         if (potionTimer > 0) {
           if (state.catcher === "boy") {
-            ghostSpeed = 4
+            ghostSpeed = 0.45
           }
           else {
-            boySpeed = 4
+            boySpeed = 0.45
           }
           potionTimer -= 1
         }
@@ -118,27 +120,27 @@ class App extends React.Component {
 
         if (keys.includes(37)) {
           boyStyle.left -= boySpeed
-          boyStyle.transform = 1
-          if (ctx.getImageData(boyStyle.left, boyStyle.top, 1, boy.offsetHeight).data.includes(boyColorCheck)) {
+          boyStyle.transform = -1
+          if (ctx.getImageData((boyStyle.left * gameHeight / 100), (boyStyle.top * gameHeight / 100), 1, boy.offsetHeight).data.includes(boyColorCheck)) {
             boyStyle.left += boySpeed
           }
         }
         if (keys.includes(38)) {
           boyStyle.top -= boySpeed
-          if (ctx.getImageData(boyStyle.left, boyStyle.top, boy.offsetWidth, 1).data.includes(boyColorCheck)) {
+          if (ctx.getImageData((boyStyle.left * gameHeight / 100), (boyStyle.top * gameHeight / 100), boy.offsetWidth, 1).data.includes(boyColorCheck)) {
             boyStyle.top += boySpeed
           }
         }
         if (keys.includes(39)) {
           boyStyle.left += boySpeed
-          boyStyle.transform = -1
-          if (ctx.getImageData(boyStyle.left + boy.offsetWidth, boyStyle.top, 1, boy.offsetHeight).data.includes(boyColorCheck)) {
+          boyStyle.transform = 1
+          if (ctx.getImageData((boyStyle.left * gameHeight / 100) + boy.offsetWidth, (boyStyle.top * gameHeight / 100), 1, boy.offsetHeight).data.includes(boyColorCheck)) {
             boyStyle.left -= boySpeed
           }
         }
         if (keys.includes(40)) {
           boyStyle.top += boySpeed
-          if (ctx.getImageData(boyStyle.left, boyStyle.top + boy.offsetHeight, boy.offsetWidth, 1).data.includes(boyColorCheck)) {
+          if (ctx.getImageData((boyStyle.left * gameHeight / 100), (boyStyle.top * gameHeight / 100) + boy.offsetHeight, boy.offsetWidth, 1).data.includes(boyColorCheck)) {
             boyStyle.top -= boySpeed
           }
         }
@@ -146,26 +148,26 @@ class App extends React.Component {
         if (keys.includes(65)) {
           ghostStyle.left -= ghostSpeed
           ghostStyle.transform = 1
-          if (ctx.getImageData(ghostStyle.left, ghostStyle.top, 1, ghost.offsetHeight).data.includes(ghostColorCheck)) {
+          if (ctx.getImageData((ghostStyle.left * window.innerHeight / 100), (ghostStyle.top * window.innerHeight / 100), 1, ghost.offsetHeight).data.includes(ghostColorCheck)) {
             ghostStyle.left += ghostSpeed
           }
         }
         if (keys.includes(87)) {
           ghostStyle.top -= ghostSpeed
-          if (ctx.getImageData(ghostStyle.left, ghostStyle.top, ghost.offsetWidth, 1).data.includes(ghostColorCheck)) {
+          if (ctx.getImageData((ghostStyle.left * window.innerHeight / 100), (ghostStyle.top * window.innerHeight / 100), ghost.offsetWidth, 1).data.includes(ghostColorCheck)) {
             ghostStyle.top += ghostSpeed
           }
         }
         if (keys.includes(68)) {
           ghostStyle.left += ghostSpeed
           ghostStyle.transform = -1
-          if (ctx.getImageData(ghostStyle.left + ghost.offsetWidth, ghostStyle.top, 1, ghost.offsetHeight).data.includes(ghostColorCheck)) {
+          if (ctx.getImageData((ghostStyle.left * window.innerHeight / 100) + ghost.offsetWidth, (ghostStyle.top * window.innerHeight / 100), 1, ghost.offsetHeight).data.includes(ghostColorCheck)) {
             ghostStyle.left -= ghostSpeed
           }
         }
         if (keys.includes(83)) {
           ghostStyle.top += ghostSpeed
-          if (ctx.getImageData(ghostStyle.left, ghostStyle.top + ghost.offsetHeight, ghost.offsetWidth, 1).data.includes(ghostColorCheck)) {
+          if (ctx.getImageData((ghostStyle.left * window.innerHeight / 100), (ghostStyle.top * window.innerHeight / 100) + ghost.offsetHeight, ghost.offsetWidth, 1).data.includes(ghostColorCheck)) {
             ghostStyle.top -= ghostSpeed
           }
         }
@@ -182,7 +184,7 @@ class App extends React.Component {
           potionTimer: potionTimer,
         }
       }, function () {
-        if (Math.abs(this.state.ghostStyle.left - this.state.boyStyle.left) < 50 && Math.abs(this.state.ghostStyle.top - this.state.boyStyle.top) < 50) {
+        if (Math.abs(this.state.ghostStyle.left - this.state.boyStyle.left) < 5 && Math.abs(this.state.ghostStyle.top - this.state.boyStyle.top) < 5) {
           this.gameOver(this.state.catcher)
         }
       })
@@ -371,17 +373,17 @@ class App extends React.Component {
   handleMazeLoad() {
     let canvas = document.getElementsByTagName("canvas")[0]
     let gameContainer = document.getElementsByClassName("gameContainer")[0]
-    gameContainer.style.width = window.innerHeight + "px"
+    gameContainer.style.width = window.innerHeight / 10 * 9 + "px"
 
-    canvas.width = window.innerHeight
-    canvas.height = window.innerHeight
+    canvas.width = window.innerHeight / 10 * 9
+    canvas.height = window.innerHeight / 10 * 9
     let ctx = canvas.getContext("2d", { willReadFrequently: true })
     this.setState({
       canvas: canvas,
       ctx: ctx,
     })
     let img = document.getElementById("mazeImage")
-    ctx.drawImage(img, 0, 0, window.innerHeight, window.innerHeight)
+    ctx.drawImage(img, 0, 0, window.innerHeight / 10 * 9, window.innerHeight / 10 * 9)
   }
 
   render() {
@@ -390,16 +392,16 @@ class App extends React.Component {
     }
 
     const boyStyle = {
-      top: this.state.boyStyle.top + "px",
-      left: this.state.boyStyle.left + "px",
+      top: this.state.boyStyle.top + "%",
+      left: this.state.boyStyle.left + "%",
       transform: "scaleX(" + this.state.boyStyle.transform + ")",
       opacity: this.state.boyStyle.opacity,
 
     }
 
     const ghostStyle = {
-      top: this.state.ghostStyle.top + "px",
-      left: this.state.ghostStyle.left + "px",
+      top: this.state.ghostStyle.top + "%",
+      left: this.state.ghostStyle.left + "%",
       transform: "scaleX(" + this.state.ghostStyle.transform + ")",
       opacity: this.state.ghostStyle.opacity,
     }
@@ -438,7 +440,7 @@ class App extends React.Component {
             {
               this.state.potionCoordinates.map((coordinate, id) => {
                 if (!this.state.potionsCollected.includes(id)) {
-                  return <img style={{ left: coordinate[0] + "px", top: coordinate[1] + "px" }} key={id} className="potionSpeed" src="potionSpeed.svg" alt="" />
+                  return <img style={{ left: coordinate[0] + "%", top: coordinate[1] + "%" }} key={id} className="potionSpeed" src="potionSpeed.svg" alt="" />
                 }
                 return null
               })

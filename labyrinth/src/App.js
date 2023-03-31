@@ -64,7 +64,7 @@ class App extends React.Component {
     let boy = document.getElementById("characterBoy")
     let ghost = document.getElementById("characterGhost")
 
-    let gameHeight = window.innerHeight / 9 * 10
+    let gameHeight = window.innerHeight / 10 * 9
 
 
     if (this.state.keys.length > 0 && this.state.gameFormClass !== "") {
@@ -148,26 +148,26 @@ class App extends React.Component {
         if (keys.includes(65)) {
           ghostStyle.left -= ghostSpeed
           ghostStyle.transform = 1
-          if (ctx.getImageData((ghostStyle.left * window.innerHeight / 100), (ghostStyle.top * window.innerHeight / 100), 1, ghost.offsetHeight).data.includes(ghostColorCheck)) {
+          if (ctx.getImageData((ghostStyle.left * gameHeight / 100), (ghostStyle.top * gameHeight / 100), 1, ghost.offsetHeight).data.includes(ghostColorCheck)) {
             ghostStyle.left += ghostSpeed
           }
         }
         if (keys.includes(87)) {
           ghostStyle.top -= ghostSpeed
-          if (ctx.getImageData((ghostStyle.left * window.innerHeight / 100), (ghostStyle.top * window.innerHeight / 100), ghost.offsetWidth, 1).data.includes(ghostColorCheck)) {
+          if (ctx.getImageData((ghostStyle.left * gameHeight / 100), (ghostStyle.top * gameHeight / 100), ghost.offsetWidth, 1).data.includes(ghostColorCheck)) {
             ghostStyle.top += ghostSpeed
           }
         }
         if (keys.includes(68)) {
           ghostStyle.left += ghostSpeed
           ghostStyle.transform = -1
-          if (ctx.getImageData((ghostStyle.left * window.innerHeight / 100) + ghost.offsetWidth, (ghostStyle.top * window.innerHeight / 100), 1, ghost.offsetHeight).data.includes(ghostColorCheck)) {
+          if (ctx.getImageData((ghostStyle.left * gameHeight / 100) + ghost.offsetWidth, (ghostStyle.top * gameHeight / 100), 1, ghost.offsetHeight).data.includes(ghostColorCheck)) {
             ghostStyle.left -= ghostSpeed
           }
         }
         if (keys.includes(83)) {
           ghostStyle.top += ghostSpeed
-          if (ctx.getImageData((ghostStyle.left * window.innerHeight / 100), (ghostStyle.top * window.innerHeight / 100) + ghost.offsetHeight, ghost.offsetWidth, 1).data.includes(ghostColorCheck)) {
+          if (ctx.getImageData((ghostStyle.left * gameHeight / 100), (ghostStyle.top * gameHeight / 100) + ghost.offsetHeight, ghost.offsetWidth, 1).data.includes(ghostColorCheck)) {
             ghostStyle.top -= ghostSpeed
           }
         }

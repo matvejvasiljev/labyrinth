@@ -15,8 +15,10 @@ class App extends React.Component {
       timerFinal: "",
       timeLeft: 0,
 
-      catcher: "ghost",
+      catcher: "",
       winner: "",
+
+      gameHeight: window.innerHeight / 10 * 9,
 
       startMenuClass: "menuShow",
       endMenuClass: "",
@@ -64,7 +66,6 @@ class App extends React.Component {
     let boy = document.getElementById("characterBoy")
     let ghost = document.getElementById("characterGhost")
 
-    let gameHeight = window.innerHeight / 10 * 9
 
 
     if (this.state.keys.length > 0 && this.state.gameFormClass !== "") {
@@ -121,26 +122,26 @@ class App extends React.Component {
         if (keys.includes(37)) {
           boyStyle.left -= boySpeed
           boyStyle.transform = -1
-          if (ctx.getImageData((boyStyle.left * gameHeight / 100), (boyStyle.top * gameHeight / 100), 1, boy.offsetHeight).data.includes(boyColorCheck)) {
+          if (ctx.getImageData((boyStyle.left * state.gameHeight / 100), (boyStyle.top * state.gameHeight / 100), 1, boy.offsetHeight).data.includes(boyColorCheck)) {
             boyStyle.left += boySpeed
           }
         }
         if (keys.includes(38)) {
           boyStyle.top -= boySpeed
-          if (ctx.getImageData((boyStyle.left * gameHeight / 100), (boyStyle.top * gameHeight / 100), boy.offsetWidth, 1).data.includes(boyColorCheck)) {
+          if (ctx.getImageData((boyStyle.left * state.gameHeight / 100), (boyStyle.top * state.gameHeight / 100), boy.offsetWidth, 1).data.includes(boyColorCheck)) {
             boyStyle.top += boySpeed
           }
         }
         if (keys.includes(39)) {
           boyStyle.left += boySpeed
           boyStyle.transform = 1
-          if (ctx.getImageData((boyStyle.left * gameHeight / 100) + boy.offsetWidth, (boyStyle.top * gameHeight / 100), 1, boy.offsetHeight).data.includes(boyColorCheck)) {
+          if (ctx.getImageData((boyStyle.left * state.gameHeight / 100) + boy.offsetWidth, (boyStyle.top * state.gameHeight / 100), 1, boy.offsetHeight).data.includes(boyColorCheck)) {
             boyStyle.left -= boySpeed
           }
         }
         if (keys.includes(40)) {
           boyStyle.top += boySpeed
-          if (ctx.getImageData((boyStyle.left * gameHeight / 100), (boyStyle.top * gameHeight / 100) + boy.offsetHeight, boy.offsetWidth, 1).data.includes(boyColorCheck)) {
+          if (ctx.getImageData((boyStyle.left * state.gameHeight / 100), (boyStyle.top * state.gameHeight / 100) + boy.offsetHeight, boy.offsetWidth, 1).data.includes(boyColorCheck)) {
             boyStyle.top -= boySpeed
           }
         }
@@ -148,26 +149,26 @@ class App extends React.Component {
         if (keys.includes(65)) {
           ghostStyle.left -= ghostSpeed
           ghostStyle.transform = 1
-          if (ctx.getImageData((ghostStyle.left * gameHeight / 100), (ghostStyle.top * gameHeight / 100), 1, ghost.offsetHeight).data.includes(ghostColorCheck)) {
+          if (ctx.getImageData((ghostStyle.left * state.gameHeight / 100), (ghostStyle.top * state.gameHeight / 100), 1, ghost.offsetHeight).data.includes(ghostColorCheck)) {
             ghostStyle.left += ghostSpeed
           }
         }
         if (keys.includes(87)) {
           ghostStyle.top -= ghostSpeed
-          if (ctx.getImageData((ghostStyle.left * gameHeight / 100), (ghostStyle.top * gameHeight / 100), ghost.offsetWidth, 1).data.includes(ghostColorCheck)) {
+          if (ctx.getImageData((ghostStyle.left * state.gameHeight / 100), (ghostStyle.top * state.gameHeight / 100), ghost.offsetWidth, 1).data.includes(ghostColorCheck)) {
             ghostStyle.top += ghostSpeed
           }
         }
         if (keys.includes(68)) {
           ghostStyle.left += ghostSpeed
           ghostStyle.transform = -1
-          if (ctx.getImageData((ghostStyle.left * gameHeight / 100) + ghost.offsetWidth, (ghostStyle.top * gameHeight / 100), 1, ghost.offsetHeight).data.includes(ghostColorCheck)) {
+          if (ctx.getImageData((ghostStyle.left * state.gameHeight / 100) + ghost.offsetWidth, (ghostStyle.top * state.gameHeight / 100), 1, ghost.offsetHeight).data.includes(ghostColorCheck)) {
             ghostStyle.left -= ghostSpeed
           }
         }
         if (keys.includes(83)) {
           ghostStyle.top += ghostSpeed
-          if (ctx.getImageData((ghostStyle.left * gameHeight / 100), (ghostStyle.top * gameHeight / 100) + ghost.offsetHeight, ghost.offsetWidth, 1).data.includes(ghostColorCheck)) {
+          if (ctx.getImageData((ghostStyle.left * state.gameHeight / 100), (ghostStyle.top * state.gameHeight / 100) + ghost.offsetHeight, ghost.offsetWidth, 1).data.includes(ghostColorCheck)) {
             ghostStyle.top -= ghostSpeed
           }
         }
@@ -265,12 +266,12 @@ class App extends React.Component {
     e.preventDefault()
     this.setState(function (state) {
       let boyStyle = state.boyStyle
-      boyStyle.top = 20
-      boyStyle.left = 30
+      boyStyle.top = 2
+      boyStyle.left = 3
 
       let ghostStyle = state.ghostStyle
-      ghostStyle.top = window.innerHeight - 55 - 20
-      ghostStyle.left = window.innerHeight - 46 - 30
+      ghostStyle.top = 93
+      ghostStyle.left = 93
 
       return {
         arrowAngle: -90,
@@ -279,6 +280,8 @@ class App extends React.Component {
         startMenuClass: "menuShow",
         endMenuClass: "",
         catcher: "",
+        boyClass: "",
+        ghostClass: "",
       }
     })
   }
@@ -373,17 +376,17 @@ class App extends React.Component {
   handleMazeLoad() {
     let canvas = document.getElementsByTagName("canvas")[0]
     let gameContainer = document.getElementsByClassName("gameContainer")[0]
-    gameContainer.style.width = window.innerHeight / 10 * 9 + "px"
+    gameContainer.style.width = this.state.gameHeight + "px"
 
-    canvas.width = window.innerHeight / 10 * 9
-    canvas.height = window.innerHeight / 10 * 9
+    canvas.width = this.state.gameHeight
+    canvas.height = this.state.gameHeight
     let ctx = canvas.getContext("2d", { willReadFrequently: true })
     this.setState({
       canvas: canvas,
       ctx: ctx,
     })
     let img = document.getElementById("mazeImage")
-    ctx.drawImage(img, 0, 0, window.innerHeight / 10 * 9, window.innerHeight / 10 * 9)
+    ctx.drawImage(img, 0, 0, this.state.gameHeight, this.state.gameHeight)
   }
 
   render() {
@@ -420,7 +423,7 @@ class App extends React.Component {
             <img id="arrow" style={arrowStyle} src="arrow.png" alt="" />
           </div>
           <img className={this.state.ghostClass} src="ghost.png" alt="" />
-          <button>Start!</button>
+          <button style={{pointerEvents: this.state.catcher === "" ? "auto" : "none"}}>Start!</button>
         </form>
 
         <form className={"endMenu " + this.state.endMenuClass} action="">
@@ -454,4 +457,4 @@ class App extends React.Component {
 
 export default App;
 
-// заменить все цифры на % в размерах экрана
+// поправить стену на которой застревает catcher

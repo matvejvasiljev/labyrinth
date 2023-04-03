@@ -203,7 +203,6 @@ class App extends React.Component {
 
       clearInterval(this.timerInterval)
 
-      console.log("game over")
       endMenuClass = "menuShow"
       endImgClass = "endImgClass"
       gameFormClass = ""
@@ -333,8 +332,6 @@ class App extends React.Component {
       this.setState({
         arrowSpeed: arrowSpeed,
         catcher: catcher
-      }, function () {
-        console.log(catcher)
       })
       this.arrowInterval = setInterval(() => {
         this.setState(function (state) {
@@ -434,7 +431,7 @@ class App extends React.Component {
         </form>
 
         <form className={"game " + this.state.gameFormClass} action="">
-          <div onClick={(e) => console.log(e.nativeEvent.offsetX, e.nativeEvent.offsetY)} className="gameContainer">
+          <div className="gameContainer">
             <canvas></canvas>
             <p id="timer">{this.state.timerFinal}</p>
             <img src="kidmaze.png" id="mazeImage" onLoad={() => this.handleMazeLoad()} alt="" />
@@ -456,5 +453,3 @@ class App extends React.Component {
 }
 
 export default App;
-
-// поправить стену на которой застревает catcher
